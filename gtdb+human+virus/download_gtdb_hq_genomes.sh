@@ -69,16 +69,16 @@ mv $DBDIR/assembly_summary.txt $DBDIR/assembly_summary_bacteria_rs.txt
 
 # Get ftp path for each filtered assembly accession
 grep -f $DBDIR/filtered_assembly_accession_no_version_genbank.tsv $DBDIR/assembly_summary_archaea_gb.txt \
-    | awk -F '\t' '{print $20}' > $DBDIR/ftp_path_genomic_fna.txt
+    | awk -F '\t' '{ n = split($20, parts, "/"); if (n > 1) print $20 parts[n-1]"_genomic.fna.gz" }'  > $DBDIR/ftp_path_genomic_fna.txt
 
 grep -f $DBDIR/filtered_assembly_accession_no_version_genbank.tsv $DBDIR/assembly_summary_bacteria_gb.txt \
-    | awk -F '\t' '{print $20}' >> $DBDIR/ftp_path_genomic_fna.txt
+    | awk -F '\t' '{ n = split($20, parts, "/"); if (n > 1) print $20 parts[n-1]"_genomic.fna.gz" }' >> $DBDIR/ftp_path_genomic_fna.txt
 
 grep -f $DBDIR/filtered_assembly_accession_no_version_refseq.tsv $DBDIR/assembly_summary_archaea_rs.txt \
-    | awk -F '\t' '{print $20}' >> $DBDIR/ftp_path_genomic_fna.txt
+    | awk -F '\t' '{ n = split($20, parts, "/"); if (n > 1) print $20 parts[n-1]"_genomic.fna.gz" }' >> $DBDIR/ftp_path_genomic_fna.txt
 
 grep -f $DBDIR/filtered_assembly_accession_no_version_refseq.tsv $DBDIR/assembly_summary_bacteria_rs.txt \
-    | awk -F '\t' '{print $20}' >> $DBDIR/ftp_path_genomic_fna.txt
+    | awk -F '\t' '{ n = split($20, parts, "/"); if (n > 1) print $20 parts[n-1]"_genomic.fna.gz" }' >> $DBDIR/ftp_path_genomic_fna.txt
 
 # Download genomes
 mkdir -p $DBDIR/gtdb-genomes
