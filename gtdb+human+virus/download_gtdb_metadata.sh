@@ -1,9 +1,8 @@
 #!/bin/bash
 DBDIR=$1
 
-# check if $1 and $2 are provided
 if [ -z "$DBDIR" ]; then
-    echo "Usage: $0 <DBDIR> <Metabuli_DIR>"
+    echo "Usage: $0 <DBDIR>"
     exit 1
 fi
 

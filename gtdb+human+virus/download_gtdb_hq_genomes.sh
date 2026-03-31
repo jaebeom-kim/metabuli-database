@@ -1,37 +1,38 @@
 #!/bin/bash
 DBDIR=$1
+MIN_COMPLETENESS=$2
+MAX_CONTAMINATION=$3
 
-# check if $1 and $2 are provided
-if [ -z "$DBDIR" ]; then
-    echo "Usage: $0 <DBDIR> <Metabuli_DIR>"
+if [ -z "$DBDIR"  ] || [ -z "$MIN_COMPLETENESS" ] || [ -z "$MAX_CONTAMINATION" ]; then
+    echo "Usage: $0 <DBDIR> <MIN_COMPLETENESS> <MAX_CONTAMINATION>"
     exit 1
 fi
 
 # Filter based on metadata
-## Assembly level = Complete or Chromosome
-## Checkm_contamination < 5
-## Checkm_completeness > 90
-
 # Get the column number of "ncbi_assembly_level", "checkm2_completeness", and "checkm2_contamination"
 assembly_level_col=$(head -1 $DBDIR/gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^ncbi_assembly_level$' | cut -d: -f1)
 checkm_completeness_col=$(head -1 $DBDIR/gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^checkm2_completeness$' | cut -d: -f1)
 checkm_contamination_col=$(head -1 $DBDIR/gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^checkm2_contamination$' | cut -d: -f1)
+sp_rep_col=$(head -1 $DBDIR/gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^gtdb_representative$' | cut -d: -f1)
 # assembly_accession_col=$(head -1 $DBDIR/gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^ncbi_genbank_assembly_accession$' | cut -d: -f1)
 
 # If checkm2 completeness and contamination are not found, use checkm completeness and contamination
 if [ -z "$checkm_completeness_col" ]; then
-    checkm_completeness_col=$(head -1 gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^checkm_completeness$' | cut -d: -f1)
+    checkm_completeness_col=$(head -1 $DBDIR/gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^checkm_completeness$' | cut -d: -f1)
 fi
 
 if [ -z "$checkm_contamination_col" ]; then
-    checkm_contamination_col=$(head -1 gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^checkm_contamination$' | cut -d: -f1)
+    checkm_contamination_col=$(head -1 $DBDIR/gtdb_metadata.tsv | tr '\t' '\n' | grep -n '^checkm_contamination$' | cut -d: -f1)
 fi
 
 awk -v assembly_level_col="$assembly_level_col" \
     -v checkm_completeness_col="$checkm_completeness_col" \
     -v checkm_contamination_col="$checkm_contamination_col" \
+    -v min_comp="$MIN_COMPLETENESS" \
+    -v max_cont="$MAX_CONTAMINATION" \
+    -v sp_rep_col="$sp_rep_col" \
     -F '\t' \
-    '{ if (($assembly_level_col == "Complete Genome" || $assembly_level_col == "Chromosome") && ($checkm_contamination_col < 5) && ($checkm_completeness_col > 90)) 
+    '{ if (($checkm_contamination_col < max_cont) && ($checkm_completeness_col > min_comp) && ($sp_rep_col == "t")) \
         {
             print substr($1, 4)
         } 
@@ -80,6 +81,6 @@ grep -f $DBDIR/filtered_assembly_accession_no_version_refseq.tsv $DBDIR/assembly
     | awk -F '\t' '{print $20}' >> $DBDIR/ftp_path_genomic_fna.txt
 
 # Download genomes
-mkdir -p $DBDIR/genomes
-aria2c -x 16 -j 16 -s 16 -i $DBDIR/ftp_path_genomic_fna.txt -d $DBDIR/genomes
-find $DBDIR/genomes -type f -name "*.fna.gz" > $DBDIR/downloaded_files.txt
+mkdir -p $DBDIR/gtdb-genomes
+aria2c -x 16 -j 16 -s 16 -i $DBDIR/ftp_path_genomic_fna.txt -d $DBDIR/gtdb-genomes
+find $DBDIR/gtdb-genomes -type f -name "*.fna.gz" > $DBDIR/gtdb_downloaded_files.txt
