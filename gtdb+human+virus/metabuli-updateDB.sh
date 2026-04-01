@@ -37,6 +37,9 @@ $METABULI createnewtaxalist \
 
 mkdir -p $OUTPUT_DIR
 
+# Get Homo sapiens tax ID from $OUTPUT_DIR/newtaxa.tsv
+HOMO_SAPIENS_TAX_ID=$(grep "Homo sapiens" $OUTPUT_DIR/newtaxa.tsv | cut -f1)
+
 $METABULI updateDB \
     --gtdb 1 \
     $OUTPUT_DIR \
@@ -45,4 +48,5 @@ $METABULI updateDB \
     $GTDB_DB_DIR \
     --new-taxa $OUTPUT_DIR/newtaxa.tsv \
     --threads $THREADS \
+    --no-mask-taxa $HOMO_SAPIENS_TAX_ID \
     > $OUTPUT_DIR/updateDB.log
