@@ -20,34 +20,25 @@ Genomes are stored in `<DBDIR>/gtdb-genomes` and a file of path to the genomes i
 ## 3. Build Metabuli database
 
 ```bash
-./metabuli-build.sh <METABULI_PATH> <DBDIR> <GTDB_TAX_DIR>
-
+./metabuli-build.sh <METABULI_PATH> <DBDIR> <GTDB_TAX_DIR> <METABULI_SOURCE_DIR> <THREADS>
 ```
 
-
-
-
-
-## 2. Download human virus genomes
+## 4. Download human and virus genomes
 
 ```bash
 ./download_virus_and_human.sh <DBDIR>
 ```
 Genomes are stored in `<DBDIR>/other-genomes` and a file of path to the genomes is stored in `<DBDIR>/other_downloaded_files.txt`.
 
-## 3. Combine GTDB HQ and human virus genomes
-
-```bash
-cat $DBDIR/downloaded_files.txt $DBDIR/other_downloaded_files.txt > $DBDIR/all_genome_files.txt
-```
-
-
-
-## 5. Donwload NCBI taxonomy
+## 5. Download NCBI taxonomy
 
 [https://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz](https://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz)
 
 [https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz](https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz)
 
-## 6. 
+## 6. Update GTDB database with human and virus genomes
+
+```bash
+./metabuli-updateDB.sh <METABULI_PATH> <DBDIR> <NCBI_TAX_DIR> <ACC2TAXID_FILE> <THREADS>
+```
 
