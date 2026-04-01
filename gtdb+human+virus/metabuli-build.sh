@@ -11,11 +11,13 @@ if [ -z "$METABULI" ] || [ -z "$DBDIR" ] || [ -z "$GTDB_TAX_DIR" ] || [ -z "$MET
     exit 1
 fi
 
+grep -v "eny-yuan" $DBDIR/gtdb_downloaded_files.txt > $DBDIR/gtdb_downloaded_files_filtered.txt
+
 
 $METABULI build \
     --gtdb 1 \
     $DBDIR/gtdb-db \
-    $DBDIR/gtdb_downloaded_files.txt \
+    $DBDIR/gtdb_downloaded_files_filtered.txt \
     $GTDB_TAX_DIR/taxid.map \
     --taxonomy-path $GTDB_TAX_DIR \
     --space-mask 11101110111 \
