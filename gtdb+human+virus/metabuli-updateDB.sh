@@ -41,7 +41,6 @@ mkdir -p $OUTPUT_DIR
 HOMO_SAPIENS_TAX_ID=$(grep "Homo sapiens" $OUTPUT_DIR/newtaxa.tsv | cut -f1)
 
 $METABULI updateDB \
-    --gtdb 1 \
     $OUTPUT_DIR \
     $ADD_GENOME_LIST \
     $OUTPUT_DIR/newtaxa.accession2taxid \
